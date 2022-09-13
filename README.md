@@ -146,3 +146,30 @@ app.use(logger);
 ```
 
 ---
+
+## error handler middleware
+
+we create errorHanler file within middleware directory,we are overwirtting default error handling comes with express, we will show statuscode in this middleware. since we call LogEvents middleware, we dont need to process next()
+
+```javascript
+const errorHandler = (err, req, res, next) => {
+  logEvents(
+    `${err.name}: ${err.message}\t${req.method}\t${req.url}\t${req.headers.origin}`,
+    "errLog.log"
+  );
+        ...
+```
+
+Finally we will call errorHandler Middleware in the end of server.js just before listining the port
+
+```javascript
+app.use(errorHandler);
+```
+
+we need one more middle ware to parse cookies than we will call this middleware in server.js
+
+```console
+yarn add cookie-parser
+```
+
+---
