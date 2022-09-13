@@ -108,3 +108,41 @@ app.all("*", (req, res) => {
 ```
 
 ---
+
+## builtin middleware
+
+The express.json() function is a built-in middleware function in Express. It parses incoming requests with JSON payloads and is based on body-parser. We will add the midlleware befor calling other routings.
+
+```javascript
+app.use(express.json());
+```
+
+## custom middleware
+
+To create history of logs and showing them in the console, we will create logger.js fle in middleware directory
+
+```console
+yarn add date-fns uuid
+mkdir middleware logs
+```
+
+we need to access directory of the project ad create a log file within logs folder and we can include log folder in .gitignore file
+Within logs folder, we need to creaye logger.js to handle logging projess and processing the next step.
+
+```javascript
+const logger = (req, res, next) => {
+  logEvents(`${req.method}\t${req.url}\t${req.headers.origin}`, "reqLog.log");
+  console.log(`${req.method} ${req.path}`);
+  next();
+};
+```
+
+then finnally we will require logger file and call the middleware before passing other routes below.
+
+```javascript
+const { logger } = require("./middleware/logger");
+        ...
+app.use(logger);
+```
+
+---
