@@ -90,3 +90,21 @@ app.use("/", require("./routes/root"));
 now index.html will be publicly accessible when we access the port 3500 in the browser
 
 ---
+
+for all the other requests other than are defined we will us _app.all_, it need to be after defined routes.
+There will be different types of responds along with _404_
+
+```javascript
+app.all("*", (req, res) => {
+  res.status(404);
+  if (req.accepts("html")) {
+    res.sendFile(path.join(__dirname, "views", "404.html"));
+  } else if (req.accepts("json")) {
+    res.json({ message: "404 Not Found" });
+  } else {
+    res.type("txt").send("404 Not Found");
+  }
+});
+```
+
+---
