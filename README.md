@@ -173,3 +173,52 @@ yarn add cookie-parser
 ```
 
 ---
+
+## Cors
+
+Accessing from one process of browser to another is not allowed thus if we try to _fetch('http://localhost:3500')_ on google on the browaser console, we will get cors error
+
+```console
+yarn add cors
+```
+
+and if we use the middleware in server
+
+```javascript
+const cors = require("cors");
+   ...
+app.use(cors());
+```
+
+now we can access localhost server from browser, it will not give error but we can create our white list in order to protect back-end
+
+create allowedOrigins.js corsOptions.js in config directory
+
+```javascript
+const allowedOrigins = ["http://localhost:3000"];
+module.exports = allowedOrigins;
+```
+
+then call allowedOrigins in corsOptions.js
+
+```javascript
+const allowedOrigins = require("./allowedOrigins");
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+module.exports = corsOptions;
+```
+
+finally giving corsOptions as an argument in _cors(corsOptions)_ will allow the app only accessable for http://localhost:3000 or other given URLs.
+
+---
