@@ -222,3 +222,126 @@ module.exports = corsOptions;
 finally giving corsOptions as an argument in _cors(corsOptions)_ will allow the app only accessable for http://localhost:3000 or other given URLs.
 
 ---
+
+## MongoDb
+
+```console
+yarn add dotenv
+```
+
+we need to add it in the beggining of server.js
+
+```javascript
+require("dotenv").config();
+```
+
+now we can create .env file, we should also add .env into .gitignore
+
+```console
+NODE_ENV=development
+DATABASE_URI=mongodb+srv://<username>:<password>@cluster0.h5i9m07.mongodb.net/<databasename>?retryWrites=true&w=majority
+```
+
+### creating mongo database :
+
+- create new project and name it
+- click on build a database and create shared cloud which is free
+- pick a cloud provider & region, name a cluster name create the cluster
+- fill username and password your connection for authorization
+- click add my current IP address, and click finish and close
+- go database, click browse collection, click add my own data
+- fill database name (ex. bookstoreDB) and collection name (ex. users)
+- go database and click connect you application
+- modify DATABASE_URI with username, password and databasename
+
+Now we are done with mongoDB set up, we need mongoose for creating database schemas.
+Mongoose is a MongoDB ODM (the NoSQL equivalent of an ORM) for Node. It provides you with a simple validation and query API to help you interact with your MongoDB database.
+
+```javascript
+yarn add mongoose
+```
+
+Now we can create schemas to crate database collections and data. We need create Note.js and User.js in models directory
+
+- user model
+
+```javascript
+const mongoose = require("mongoose");
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  password: { type: String, required: true },
+  roles: [{ type: String, default: "Employee" }],
+  active: { type: Boolean, default: true },
+});
+module.exports = mongoose.model("User", userSchema);
+```
+
+- note model
+
+```javascript
+const mongoose = require("mongoose");
+const noteSchema = new mongoose.Schema(
+  {
+    user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+    title: { type: String, required: true },
+    text: { type: String, default: "Employee" },
+    completed: { type: Boolean, default: false },
+  },
+  { timestamp: true }
+);
+module.exports = mongoose.model("Note", noteSchema);
+```
+
+Notes should assign to specific users thus we get ObjectId of reference User.
+we also want when note created so we put another object as additionally timestamp.
+
+MongoDb object id will autamatically created but they are very long strings and we want sequencial ticket number,
+thus we will use another package
+
+```console
+yarn add mongo-sequence
+```
+
+then we will include in Note model, give n inc_field and id name and start counting it from 500
+
+```javascript
+const AutoIncrement = require("mongoose-sequence")(mongoose);
+
+noteSchema.plugin(AutoIncrement, {
+  inc_field: "ticket",
+  id: "ticketNums",
+  start_seq: 500,
+});
+```
+
+Finally we code the connection; create dbConn.js under config directory
+
+```javascript
+const mongoose = require("mongoose");
+
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.DATABASE_URI);
+  } catch (err) {
+    console.log(err);
+  }
+};
+module.exports = connectDB;
+```
+
+Then in server.js, then mongoose connect method will be called once when is the port open
+and event listener will always on listening errors
+
+```javascript
+connectDB()
+    ...
+mongoose.connection.once('open', () => {
+    console.log('Connected to MongoDB')
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+})
+
+mongoose.connection.on('error', err => {
+    console.log(err)
+    logEvents(`${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`, 'mongoErrLog.log')
+})
+```
