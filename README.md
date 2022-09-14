@@ -345,3 +345,44 @@ mongoose.connection.on('error', err => {
     logEvents(`${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`, 'mongoErrLog.log')
 })
 ```
+
+---
+
+We start with adding npm packages;
+express-async-handler handle exception so we dont need to try catch and throw error.
+
+```console
+yarn add express-async-handler bcrypt
+```
+
+then we will create a userController under controllers directory, wrap all the CRUD ops methods by asyncHandler then export them.
+
+```javascript
+const getAllUsers = asyncHandler(async (req, res) => {});
+const createNewUser = asyncHandler(async (req, res) => {});
+const updateUser = asyncHandler(async (req, res) => {});
+const deleteUser = asyncHandler(async (req, res) => {});
+
+module.exports = { getAllUsers, createNewUser, updateUser, deleteUser };
+```
+
+Then we will create userRoutes.js under routes, will create chainable route handle then will export it.
+
+```javascript
+router
+  .route("/")
+  .get(userController.getAllUsers)
+  .post(userController.createNewUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
+
+module.exports = router;
+```
+
+Finally we will import userRoutes.js in server just after _use("/")_
+
+```javascript
+app.use("/users", require("./routes/userRoutes"));
+```
+
+---
