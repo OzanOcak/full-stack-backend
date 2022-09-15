@@ -433,10 +433,23 @@ if (user) {
 ```
 
 Now we can create(post) new user and get them all
+whenever we send json type data, we have to add Content-type: application/json in the header
+in curl -H flag indicates header
 
 ```console
 curl -X POST -d '{"username":"Carr","password":"123456","roles":["employee"]}' -H 'content-type:application/json' http://localhost:4000/users
 
 curl -X GET http://localhost:4000/users
----
+
+curl http://localhost:4000/users -X DELETE -d '{"id": "6323265874f28ead05909faa"}' -H 'Content-type:application/json'
+
+curl http://localhost:4000/users -X PATCH
+-d {
+	"id": "63232d7baf87f6d15a100018",
+	"username": "jan",
+	"password": "123456",
+	"roles": ["employee"],
+	"active": true
+}
+-H 'Content-type:application/json'
 ```
