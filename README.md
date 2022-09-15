@@ -348,6 +348,8 @@ mongoose.connection.on('error', err => {
 
 ---
 
+## userController and userRoutes set-up
+
 We start with adding npm packages;
 express-async-handler handle exception so we dont need to try catch and throw error.
 
@@ -386,3 +388,55 @@ app.use("/users", require("./routes/userRoutes"));
 ```
 
 ---
+
+## Logic of creating and getting users in controllers
+
+We will fill the logic inside of _getAllUsers_ function,
+users is an object, basically function pointer,
+we first find User fields then selec no password
+then lean it to json(get rid of all other build in methods)
+then finally execute it
+we also use return if object array is empty cuz it may not return it cz of header already sent
+since user is object, empty object stills truthy so we need to use `if (!users?.length)`
+
+```javascript
+const users = await User.find().select("-password").lean();
+if (!users?.length) {
+  return res.status(400).json({ message: "No users found" });
+}
+res.json(users);
+```
+
+Then with in createUser function;
+we first assign req.body arguments to variable to check them is exist in the request (400)
+we also check if there is any duplication (409)
+then hash the password with bcrpt npm package
+then assign all the user's data new object to create new user
+
+```javascript
+const { username, password, roles } = req.body;
+if (!username || !password || !Array.isArray(roles) || !roles.length) {
+  return res.status(400).json({ message: "All fields are required" });
+}
+const duplicate = await User.findOne({ username }).lean().exec();
+if (duplicate) {
+  return res.status(409).json({ message: "Duplicate username" });
+}
+const hashedPwd = await bcrypt.hash(password, 10); // salt rounds
+const userObject = { username, password: hashedPwd, roles };
+const user = await User.create(userObject);
+if (user) {
+  res.status(201).json({ message: `New user ${username} created` });
+} else {
+  res.status(400).json({ message: "Invalid user data received" });
+}
+```
+
+Now we can create(post) new user and get them all
+
+```console
+curl -X POST -d '{"username":"Carr","password":"123456","roles":["employee"]}' -H 'content-type:application/json' http://localhost:4000/users
+
+curl -X GET http://localhost:4000/users
+---
+```
