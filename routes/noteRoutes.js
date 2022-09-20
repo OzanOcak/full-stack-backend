@@ -1,7 +1,9 @@
 const express = require("express");
-const { patch } = require("./root");
 const router = express.Router();
 const noteController = require("../controllers/noteController");
+const verifyJWT = require("../middleware/verifyJWT");
+
+router.use(verifyJWT);
 
 router
   .route("/")

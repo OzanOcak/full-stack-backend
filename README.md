@@ -521,3 +521,22 @@ responde with accress token
 **logou** function of controllers, should clear the token.
 
 - all these functions are activated with the route
+
+---
+
+## JSON Web Token
+
+we need to create middleware to check if out token is right so create verifyJWT.js that will match access token if exist, and will allow accessing protected routes
+
+if we route http://localhost:4000/auth with header Content-type : application/json
+and send {"username":"Tom","password":"123456"}
+the repond will return access token and a cookie
+
+if we route http://localhost:4000/auth/refresh , we will get new access token every time
+
+and we if route http://localhost:4000/notes or users with Application : Bearer <Access Token> , we can access the route for a minute, because access toke expires every minute.
+
+- note that we update Access Token for 1m
+- we need auth/refresh via refresh token to get access token in client side
+
+---
