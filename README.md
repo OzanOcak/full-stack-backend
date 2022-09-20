@@ -497,3 +497,27 @@ app.use("/auth", require("./routes/authRoutes"));
 ```
 
 ---
+
+in the .env we need to fill 2 line
+
+```console
+ACCESS_TOKEN_SECRET=
+REFRESH_TOKEN_SECRET=
+```
+
+in the terminal
+
+```console
+node
+require('crpto').randomBytes(64).toString('hex') // for access token secret
+require('crpto').randomBytes(64).toString('hex') // for refresh token secret
+```
+
+**login** function of controllers must check if the requirements full-filled incluided crupted password is matched along with user name, then should create access token, refresh token and cookie with refresh token and
+responde with accress token
+
+**refresh** function of controllers must check if there is token in the request, if there is, should check if it is matched with the one in .env then create new access token and responde with it.
+
+**logou** function of controllers, should clear the token.
+
+- all these functions are activated with the route
