@@ -453,3 +453,47 @@ curl http://localhost:4000/users -X PATCH
 }
 -H 'Content-type:application/json'
 ```
+
+---
+
+## Authentication :
+
+Authentication means getting access with user id and password while Authorization mean having additional privillage to access some of protected routes.
+
+We will start creating authController.js file
+
+```javascript
+const login = asyncHandler(async (req, res) => {});
+const refresh = (req, res) => {};
+const logout = (req, res) => {};
+
+module.exports = { login, refresh, logout };
+```
+
+We need json web token for refresh method. when we access /refresh, new _access token_ will be created to give us authorization
+
+```consol
+yarn add jsonwebtoke
+```
+
+Then authRouthes.js to route and we will use route methods
+
+```javascript
+const express = require("express");
+const router = express.Router();
+const authController = require("../controllers/authController");
+
+router.route("/").post(authController.login);
+router.route("/refresh").get(authController.refresh);
+router.route("/logout").post(authController.logout);
+
+module.exports = router;
+```
+
+And finally we can add auth routh in the server.js as a middleware
+
+```javascript
+app.use("/auth", require("./routes/authRoutes"));
+```
+
+---
