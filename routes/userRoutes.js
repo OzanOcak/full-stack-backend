@@ -4,7 +4,7 @@ const userController = require("../controllers/userController");
 
 const verifyJWT = require("../middleware/verifyJWT");
 
-router.use(verifyJWT);
+router.use(verifyJWT); // without token you can not route anywhere it fetches data from db
 
 router
   .route("/")
