@@ -1,14 +1,14 @@
 require("dotenv").config();
-const express = require("express");
+import * as express from 'express';
 const app = express();
-const path = require("path");
-const { logger } = require("./middleware/logger");
-const errorHandler = require("./middleware/errorHandler");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-const corsOptions = require("./config/corsOptions");
-const connectDB = require("./config/dbConn");
-const mongoose = require("mongoose");
+import * as path from "path";
+import {logger,logEvents } from "./middleware/logger";
+import * as errorHandler from "./middleware/errorHandler";
+import * as cookieParser from "cookie-parser";
+import * as cors from "cors";
+import * as corsOptions from "./config/corsOptions";
+import * as connectDB from "./config/dbConn";
+import * as mongoose from "mongoose";
 const PORT = process.env.PORT || 4000;
 
 console.log(process.env.NODE_ENV);
